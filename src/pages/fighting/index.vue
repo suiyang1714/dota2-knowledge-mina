@@ -163,7 +163,7 @@ export default {
     position: relative;
   }
   .fixed--motto {
-    position: fixed;
+    position: absolute;
     bottom: 20rpx;
     left: 0;
     width: 100%;

@@ -11,8 +11,9 @@ const store = new Vuex.Store({
   state: {
     userInfo: null,
     sessionKey: null,
-    question: Object,
-    bgRandom: Number
+    question: {},
+    bgRandom: null,
+    users: []
   },
   getters,
   actions,

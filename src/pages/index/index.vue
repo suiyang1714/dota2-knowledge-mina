@@ -1,11 +1,11 @@
 <template lang="pug">
   .container(:style="{ backgroundImage: 'url( https://dota2qiniu.adityasui.com/dota_bg_'+ bgRandom +'.jpg)' }")
-    .container__header(v-if="userInfo")
+    .container__header
       .user__info
         .user__info--avatar
           img(:src="userInfo.avatarUrl")
         .user__info--nickname {{ userInfo.nickname }}
-        .user__info--record(v-if="userInfo.record")
+        .user__info--record
           text 答对 {{ userInfo.record.victory }}
           text 答错 {{ userInfo.record.failure }}
           text 连胜 {{ userInfo.record.winStreak }}
@@ -13,10 +13,11 @@
           text {{ userInfo.record.highLadder }}
       .user__control
         .user__control--fighting
-          a.user__control(href="../fighting/main") 答题
-    .container__content(v-else)
-      .user__getInfo
-        button(open-type="getUserInfo", lang="zh_CN", @getuserinfo="onGotUserInfo") 获取用户信息
+          a.user__control(href="../fighting/main") 天梯赛
+        .user__control--rank
+          a.user__control(href="../rank/main") 排行榜
+        .user__control--issue
+          a.user__control(href="../newIssue/main") 出题官
     .fixed--motto
       div 与其感慨路难行，不如马上出发
       div Better to run than curse the road.
@@ -28,27 +29,29 @@ import { mapState } from 'vuex'
 export default {
   data () {
     return {
-      encryptedData: String,
-      iv: String,
-      signature: String
+
     }
   },
+  async onLoad () {
+    wx.showShareMenu({
+      withShareTicket: true
+    })
+  },
   methods: {
-    onGotUserInfo: async function (ev) {
-      // this.$store.state.userInfo = ev.mp.detail.userInfo
-      const { encryptedData, iv, signature } = ev.mp.detail
-      await this.$store.dispatch('ValidateUser', {
-        encryptedData: encryptedData,
-        iv: iv,
-        signature: signature,
-        sessionKey: this.$store.state.sessionKey
-      })
-    }
+
   },
   computed: mapState([
     'userInfo',
     'bgRandom'
-  ])
+  ]),
+  onShareAppMessage: function (resMessage) {
+    console.log(resMessage)
+    // 分享回调已取消
+    return {
+      title: 'DOTA2你知多少',
+      path: `/page/guide/main?openid=${this.$store.state.userInfo.openid}`
+    }
+  }
 }
 </script>
 
@@ -106,15 +109,13 @@ export default {
   }
   .user__control {
     margin-top: 20rpx;
-    &--fighting {
-      a {
-        width: 240rpx;
-        height: 80rpx;
-        line-height: 80rpx;
-        text-align: center;
-        border-bottom: 1px solid #000;
-        display: block;
-      }
+    a {
+      width: 240rpx;
+      height: 80rpx;
+      line-height: 80rpx;
+      text-align: center;
+      border-bottom: 1px solid #000;
+      display: block;
     }
   }
   .container {
@@ -131,7 +132,7 @@ export default {
       box-sizing: border-box;
     }
     .fixed--motto {
-      position: fixed;
+      position: absolute;
       bottom: 20rpx;
       left: 0;
       width: 100%;
